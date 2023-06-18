@@ -1,0 +1,11 @@
+FROM  mysql:5.7
+LABEL authors="gearbox.works"
+
+RUN printf "\n\
+[mysqldump]\n\
+user=root\n\
+password=wordpress\n\
+" > /root/.my.cnf && \
+    chmod 600 /root/.my.cnf
+
+

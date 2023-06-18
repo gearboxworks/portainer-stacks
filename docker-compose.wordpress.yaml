@@ -1,0 +1,54 @@
+version: '2'
+
+networks:
+  traefik_network:
+    external:
+      name: traefik_default
+
+services:
+  db:
+    image: wp-mysql:latest
+    networks:
+    - traefik_network
+    ports:
+    - 33306:3306
+    volumes:
+    - db_data:/var/lib/mysql
+    restart: always
+    environment:
+      MYSQL_ROOT_PASSWORD: ${MYSQL_DATABASE_PASSWORD}
+      MYSQL_DATABASE: wordpress
+      MYSQL_USER: wordpress
+      MYSQL_PASSWORD: wordpress
+
+  php:
+    image: xdebug-wordpress:latest
+    labels:
+    - "traefik.enable=true"
+    - "traefik.http.routers.wordpress.rule=Host(`wordpress.local`)"
+    - "traefik.http.routers.wordpress.service=php-wordpress"
+    - "traefik.http.routers.wordpress.entrypoints=web"
+    - "traefik.http.routers.dss_store.rule=Host(`dss.store`)"
+    - "traefik.http.routers.dss_store.service=php-wordpress"
+    - "traefik.http.routers.dss_store.entrypoints=web"
+    - "traefik.http.routers.davisworkwear_store.rule=Host(`davisworkwear.store`)"
+    - "traefik.http.routers.davisworkwear_store.service=php-wordpress"
+    - "traefik.http.routers.davisworkwear_store.entrypoints=web"
+    networks:
+    - traefik_network
+    ports:
+    - 8090:80
+    - 9003:9003
+    volumes:
+    - wordpress-root:/var/www/html
+    restart: always
+    environment:
+      WORDPRESS_DB_HOST: db:3306
+      WORDPRESS_DB_USER: wordpress
+      WORDPRESS_DB_PASSWORD: wordpress
+
+volumes:
+  db_data:
+  wordpress-root:
+    external: true
+

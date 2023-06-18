@@ -1,0 +1,16 @@
+# This is courtesy of ChatGPT and currently untested.
+# First stage: get apt package
+FROM debian:buster-slim as builder
+
+RUN apt-get update && \
+    apt-get install -y nano
+
+# Second stage: copy nano from first stage into Traefik image
+FROM traefik:2.10
+LABEL authors="gearbox.works"
+
+COPY --from=builder /usr/bin/nano /usr/bin/nano
+COPY --from=builder /usr/lib/x86_64-linux-gnu/libmagic.so.1 /usr/lib/x86_64-linux-gnu/
+COPY --from=builder /usr/lib/x86_64-linux-gnu/libnano.so.4 /usr/lib/x86_64-linux-gnu/
+
+RUN touch /traefik.toml
