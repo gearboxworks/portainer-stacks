@@ -1,0 +1,30 @@
+version: "3.8"
+
+networks:
+  traefik_network:
+    external:
+      name: traefik_default
+
+services:
+  step-ca:
+    image: smallstep/step-ca
+    networks:
+    - traefik_network
+    labels:
+    - "traefik.enable=true"
+    - "traefik.http.routers.smallstep.rule=Host(`step-ca.local`)"
+    - "traefik.http.routers.smallstep.service=step-ca-step-ca"
+    - "traefik.http.routers.smallstep.entrypoints=web,websecure"
+    environment:
+      DOCKER_STEPCA_INIT_NAME: Smallstep CA
+      DOCKER_STEPCA_INIT_DNS_NAMES: localhost, step-ca.local
+      DOCKER_STEPCA_INIT_PROVISIONER_NAME: admin
+      DOCKER_STEPCA_INIT_PASSWORD: $PASSWORD
+      DOCKER_STEPCA_INIT_REMOTE_MANAGEMENT: true
+    ports:
+    - 9000:9000
+    volumes:
+    - type: bind
+      source: /etc/step-ca
+      target: /home/step
+      read_only: false
