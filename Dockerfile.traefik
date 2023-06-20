@@ -2,3 +2,4 @@ FROM traefik:2.10
 LABEL authors="gearbox.works"
 
 ADD traefik.yaml /etc/traefik/traefik.yaml
+RUN mkdir -p /etc/traefik/certs
