@@ -1,0 +1,45 @@
+Generating root certificate... done!
+Generating intermediate certificate... done!
+✔ Root certificate: /home/step/certs/root_ca.crt
+✔ Root private key: /home/step/secrets/root_ca_key
+✔ Root fingerprint: a3f2c18485538bc778669a6cc0c4a1607822783eb426012c172bd79754ac5c0e
+✔ Intermediate certificate: /home/step/certs/intermediate_ca.crt
+✔ Intermediate private key: /home/step/secrets/intermediate_ca_key
+badger 2023/06/23 23:48:09 INFO: All 0 tables opened in 0s
+✔ Database folder: /home/step/db
+✔ Default configuration: /home/step/config/defaults.json
+✔ Certificate Authority configuration: /home/step/config/ca.json
+✔ Admin provisioner: admin (JWK)
+✔ Super admin subject: step
+Your PKI is ready to go. To generate certificates for individual services see 'step help ca'.
+FEEDBACK 😍 🍻
+  The step utility is not instrumented for usage statistics. It does not phone
+  home. But your feedback is extremely valuable. Any information you can provide
+  regarding how you’re using `step` helps. Please send us a sentence or two,
+  good or bad at feedback@smallstep.com or join GitHub Discussions
+  https://github.com/smallstep/certificates/discussions and our Discord
+  https://u.step.sm/discord.
+👉 Your CA administrative username is: step
+👉 Your CA administrative password is: password
+🤫 This will only be displayed once.
+badger 2023/06/23 23:48:09 INFO: All 0 tables opened in 0s
+badger 2023/06/23 23:48:09 INFO: Replaying file id: 0 at offset: 0
+badger 2023/06/23 23:48:09 INFO: Replay took: 2.712862ms
+2023/06/23 23:48:09 Starting Smallstep CA/0.24.2 (linux/amd64)
+2023/06/23 23:48:09 Documentation: https://u.step.sm/docs/ca
+2023/06/23 23:48:09 Community Discord: https://u.step.sm/discord
+2023/06/23 23:48:09 Config file: /home/step/config/ca.json
+2023/06/23 23:48:09 The primary server URL is https://localhost:9000
+2023/06/23 23:48:09 Root certificates are available at https://localhost:9000/roots.pem
+2023/06/23 23:48:09 Additional configured hostnames: step-ca.local, step-ca
+2023/06/23 23:48:09 X.509 Root Fingerprint: a3f2c18485538bc778669a6cc0c4a1607822783eb426012c172bd79754ac5c0e
+2023/06/23 23:48:09 Serving HTTPS on :9000 ...
+time="2023-06-23T23:48:38Z" level=info duration="97.166µs" duration-ns=97166 fields.time="2023-06-23T23:48:38Z" method=GET name=ca path=/health protocol=HTTP/2.0 referer= remote-address=127.0.0.1 request-id=cib2ulhug2ls73afkpi0 size=16 status=200 user-agent="Smallstep CLI/0.24.4 (linux/amd64)" user-id=
+time="2023-06-23T23:49:08Z" level=info duration="23.284µs" duration-ns=23284 fields.time="2023-06-23T23:49:08Z" method=GET name=ca path=/health protocol=HTTP/2.0 referer= remote-address=127.0.0.1 request-id=cib2ut1ug2ls73afkpig size=16 status=200 user-agent="Smallstep CLI/0.24.4 (linux/amd64)" user-id=
+
+
+X.509v3 Root CA Certificate (ECDSA P-256) [Serial: 1364...9977]
+  Subject:     Smallstep CA Root CA
+  Issuer:      Smallstep CA Root CA
+  Valid from:  2023-06-23T23:48:08Z
+          to:  2033-06-20T23:48:08Z

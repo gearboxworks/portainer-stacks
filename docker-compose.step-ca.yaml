@@ -1,0 +1,44 @@
+version: "3.8"
+
+networks:
+  shared_network:
+    name: shared
+    external: true
+
+services:
+  step-ca:
+    image: smallstep/step-ca
+    restart: unless-stopped
+    networks:
+    - shared_network
+    extra_hosts:
+    - "wordpress.local:192.168.1.110"
+    - "step-ca.local:192.168.1.110"
+    - "traefik.local:192.168.1.110"
+
+    labels:
+    - "traefik.enable=true"
+    - "traefik.http.routers.step-ca.rule=Host(`step-ca.local`)"
+    - "traefik.http.routers.step-ca.service=step-ca"
+    - "traefik.http.routers.step-ca.entrypoints=websecure,web"
+    - "traefik.http.routers.step-ca.tls.certresolver=default"
+    - "traefik.http.routers.step-ca.tls.domains[0].main=step-ca.local"
+    - "traefik.http.services.step-ca.loadbalancer.server.port=9000"
+    environment:
+      LEGO_CA_CERTIFICATES: "/home/step/certs/root_ca.crt"
+      LEGO_CA_SERVER_NAME: "step-ca.local"
+      DOCKER_STEPCA_INIT_NAME: Smallstep CA
+      DOCKER_STEPCA_INIT_ADMIN_SUBJECT: admin@step-ca.local
+      DOCKER_STEPCA_INIT_DNS_NAMES: localhost, step-ca.local
+      DOCKER_STEPCA_INIT_PROVISIONER_NAME: admin
+      DOCKER_STEPCA_INIT_PASSWORD: $PASSWORD
+      DOCKER_STEPCA_INIT_REMOTE_MANAGEMENT: true
+      DOCKER_STEPCA_INIT_ACME: true
+    ports:
+    - 9000:9000
+    volumes:
+    # Allow Step CA config to be accessible on Portainer VM
+    - /etc/step:/home/step
+    # Use the host's SLL certificate store
+    - /etc/ssl/certs:/etc/ssl/certs
+
