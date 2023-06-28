@@ -22,14 +22,17 @@ services:
     restart: unless-stopped
     environment:
       LEGO_CA_CERTIFICATES: "/etc/step/certs/root_ca.crt"
-      LEGO_CA_SERVER_NAME: "step-ca.local"
     labels:
     - "traefik.enable=true"
     - "traefik.http.routers.traefik.rule=Host(`traefik.local`)"
     - "traefik.http.routers.traefik.service=traefik"
-    - "traefik.http.routers.traefik.entrypoints=web,websecure"
+    - "traefik.http.routers.traefik.entrypoints=websecure,web"
     - "traefik.http.routers.traefik.tls.certresolver=default"
     - "traefik.http.services.traefik.loadbalancer.server.port=8080"
+    - "traefik.http.routers.traefik-api.rule=PathPrefix(`/api`)"
+    - "traefik.http.routers.traefik-api.service=api@internal"
+    - "traefik.http.routers.traefik.entrypoints=websecure"
+
     command:
       - "--api.insecure=true"
       - "--providers.docker"
