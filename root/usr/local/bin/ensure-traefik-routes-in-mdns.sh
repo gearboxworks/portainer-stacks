@@ -1,5 +1,12 @@
 #!/usr/bin/env bash
 
+function publish_domain {
+  local host_ip="$1"
+  local domain="$2"
+
+  /usr/bin/avahi-publish -a "${domain}" -R "${host_ip}" &
+}
+
 function main() {
   local host_ip="$1"
   local published
@@ -24,7 +31,7 @@ function main() {
       continue
     fi
     echo "Publishing ${domain}"
-    if ! /usr/bin/avahi-publish -a "${domain}" -R "${host_ip}" ; then
+    if ! publish_domain "${host_ip}" "${domain}"; then
       echo "Error: Unable to publish ${domain}" >&2
     fi
     # Update JSON with newly published domain and time
