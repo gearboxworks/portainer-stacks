@@ -1,0 +1,10 @@
+[Unit]
+Description=Run traefik-mdns.service every 3 minutes
+
+[Timer]
+OnBootSec=5min
+OnUnitActiveSec=3min
+Unit=traefik-mdns.service
+
+[Install]
+WantedBy=multi-user.target
