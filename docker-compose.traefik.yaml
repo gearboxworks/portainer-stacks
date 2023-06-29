@@ -31,7 +31,7 @@ services:
     - "traefik.http.services.traefik.loadbalancer.server.port=8080"
     - "traefik.http.routers.traefik-api.rule=PathPrefix(`/api`)"
     - "traefik.http.routers.traefik-api.service=api@internal"
-    - "traefik.http.routers.traefik.entrypoints=websecure"
+    - "traefik.http.routers.traefik.entrypoints=web,websecure"
 
     command:
       - "--api.insecure=true"
