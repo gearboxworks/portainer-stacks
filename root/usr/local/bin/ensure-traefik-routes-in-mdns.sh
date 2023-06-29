@@ -26,13 +26,7 @@ function get_cached {
     echo '{}' > "${CACHE_FILE}"
   fi
   < "${CACHE_FILE}" \
-    jq '.[] | select(.rule|contains("Host(`"))|.rule' \
-        | tr '`' ' ' \
-        | awk '{print$2}' \
-        | sort \
-        | uniq \
-        | tr "\n" ' '
-
+    jq '.[].domains.name' | sort | tr "\n" ' '
 }
 
 function current_iso8601_datetime {
@@ -75,8 +69,8 @@ function main() {
   local domain
 
 
-  cached="${get_cached)"
-  routers="$(get_routers)"
+  cached="$(get_cached)"
+  routers="$(get_routers) ${cached}"
   if [ "${routers}" == "" ] ; then
     printf "\nWarning: Unable to reach %s" "${TRAEFIK_ROUTERS_API_URL}" >&2
     # TODO Load cached values from JSON file
@@ -98,7 +92,7 @@ function main() {
       printf "\nError: Unable to publish %s" "${domain}" >&2
     fi
     updated=1
-    # Update JSON with newly published domain and time
+    # Write updated JSON to CACHE_FILE
   done
   if [ $updated -eq 1 ]; then
     printf "\n"
@@ -107,4 +101,3 @@ function main() {
 
 main
 
-}
