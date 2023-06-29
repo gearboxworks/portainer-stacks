@@ -1,0 +1,7 @@
+{
+   "domains": [
+      {"name":"wordpress.local", "last_seen": "2023-06-29T05:52:18Z"},
+      {"name":"traefik.local", "last_seen": "2023-06-29T05:52:19Z"},
+      {"name":"step-ca.local", "last_seen": "2023-06-29T05:52:20Z"}
+   ]
+}
