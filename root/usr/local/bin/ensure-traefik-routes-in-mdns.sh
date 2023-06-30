@@ -1,10 +1,11 @@
 #!/usr/bin/env bash
 
-# TODO: Get IP address from `ip addr`
+# TODO Get IP address from `ip addr`
 HOST_IP_ADDRESS="192.168.1.110"
 HOST_PORT="8081"
 TRAEFIK_ROUTERS_API_URL="http://${HOST_IP_ADDRESS}:${HOST_PORT}/api/http/routers"
 CACHE_FILE="/etc/traefik/traefik-mdns.json"
+#TODO Make this able to be set from CLI
 DEBUG=0
 
 function debug_msg {
@@ -194,7 +195,7 @@ function main() {
     updated=1
     debug_msg "Write updated JSON to CACHE_FILE"
   done
-  # TODO REMOVE PUBLISHED DOMAINS NOT IN TRAEFIK
+  # TODO Remove published domains not in Traefik
   if [ "" != "${retrieved_domains}" ]; then
     debug_msg "Writing cache."
     write_cached_json "${cached_json}"
