@@ -1,7 +1,6 @@
 #!/usr/bin/env bash
 
-# TODO Get IP address from `ip addr`
-HOST_IP_ADDRESS="192.168.1.110"
+HOST_IP_ADDRESS="$(hostname -I | awk '{print$1}')"
 HOST_PORT="8081"
 TRAEFIK_ROUTERS_API_URL="http://${HOST_IP_ADDRESS}:${HOST_PORT}/api/http/routers"
 CACHE_FILE="/etc/traefik/traefik-mdns.json"
