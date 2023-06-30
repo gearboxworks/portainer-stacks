@@ -5,8 +5,17 @@ HOST_IP_ADDRESS="192.168.1.110"
 HOST_PORT="8081"
 TRAEFIK_ROUTERS_API_URL="http://${HOST_IP_ADDRESS}:${HOST_PORT}/api/http/routers"
 CACHE_FILE="/etc/traefik/traefik-mdns.json"
-#TODO Make this able to be set from CLI
-DEBUG=0
+
+function is_debug {
+  local is_debug="$1"
+  if [ "debug" == "${is_debug}" ] ; then
+    echo 1
+    return
+  fi
+  echo 0
+}
+
+DEBUG="$(is_debug "$1")"
 
 function debug_msg {
   local msg="$1"
@@ -195,7 +204,6 @@ function main() {
     updated=1
     debug_msg "Write updated JSON to CACHE_FILE"
   done
-  # TODO Remove published domains not in Traefik
   if [ "" != "${retrieved_domains}" ]; then
     debug_msg "Writing cache."
     write_cached_json "${cached_json}"
