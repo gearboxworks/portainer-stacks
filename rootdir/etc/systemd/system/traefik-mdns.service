@@ -2,8 +2,8 @@
 Description=mDNS Service for Traefik Routes
 
 [Service]
-type=oneshot
-ExecStart=/usr/local/bin/ensure-traefik-routes-in-mdns.sh
+type=forking
+ExecStart=/usr/local/bin/publish-traefik-mdns.sh
 
 [Install]
 WantedBy=multi-user.target
