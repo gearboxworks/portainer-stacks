@@ -194,7 +194,7 @@ function main() {
       debug_msg 'Now look at the next domain.'
       continue
     fi
-    printf 'Publishing %s' "${domain}"
+    printf "Publishing %s\n" "${domain}"
     if ! publish_domain "${HOST_IP_ADDRESS}" "${domain}"; then
       printf 'Error: Unable to publish %s' "${domain}" >&2
     fi
