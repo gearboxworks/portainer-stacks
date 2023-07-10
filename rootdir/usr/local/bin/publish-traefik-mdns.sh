@@ -30,6 +30,14 @@ function publish_domain {
   /usr/bin/avahi-publish -a "${domain}" -R "${host_ip}" &
 }
 
+function published_domain {
+  local domain="$1"
+  local result
+
+  result="$(/usr/bin/avahi-resolve --name "${domain}" 2>/dev/null)"
+  test "" != "${result}"
+}
+
 function read_cached_json {
   local cached_json=""
 
@@ -75,7 +83,7 @@ function cache_has_domain {
   local query
 
   query="$(printf '.domains[]|select(.name=="%s")' "${domain}")"
-  result="$(jq -r "${query}" <<< "${cached_domains}")"
+  result="$(echo "${cached_domains}" | jq -r "${query}")"
   test "" != "${result}"
 }
 
@@ -104,10 +112,6 @@ function current_iso8601_datetime {
 
 function retrieve_routers_json {
   curl --silent "${TRAEFIK_ROUTERS_API_URL}"
-}
-
-function discover_published_domains {
-  pgrep -a avahi-publish | awk '{print $4}' | tr "\n" ' '
 }
 
 function kill_published {
@@ -141,10 +145,8 @@ function timeout_domains {
 }
 
 function main() {
-  local space=' '
   local updated=0
   local routers_json
-  local published_domains
   local cached_json
   local cached_domains
   local retrieved_domains
@@ -175,20 +177,19 @@ function main() {
   debug_msg "Deduplicate domains after combining Traefik-defined and previously cached domains."
   potential_domains="$(dedup_domains "${potential_domains}")"
 
-  debug_msg "Use pgrep to discover the avahi-published .local domains from list of processes."
-  published_domains="$(discover_published_domains)"
-
   debug_msg "Loop through the domains retrieved from Traefik to see if they have been published."
   for domain in $potential_domains; do
     debug_msg "Attempt to match a .local domain retrieved from Trafik to the list of domains currently published."
-    debug_msg "$(printf 'Checking if %s is published_domains...' "${domain}")"
-    if [[ "${space}${published_domains}${space}" =~ ${space}${domain}${space} ]] ; then
+    debug_msg "$(printf 'Checking if %s is published...' "${domain}")"
+    if published_domain "${domain}" ; then
       [ $DEBUG -eq 1 ] && printf "already published"
       debug_msg "$(printf 'Updating .last_seen %s in cache file %s.' "${domain}", "${CACHE_FILE}")"
       debug_msg 'Since the domain is already published update JSON with last seen time.'
       if cache_has_domain "${domain}" "${cached_json}" ; then
+        debug_msg 'Domain exists in cached JSON; update its last seen time.'
         cached_json="$(update_domain "${domain}" "${cached_json}")"
       else
+        debug_msg 'Domain does not exist in cached JSON; add it.'
         cached_json="$(add_domain "${domain}" "${cached_json}")"
       fi
       debug_msg 'Now look at the next domain.'
