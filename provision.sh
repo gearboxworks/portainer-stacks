@@ -2,8 +2,6 @@
 
 REMOTE_SYSTEM="containers.local"
 
-
-
 function main {
   local password
 
@@ -46,4 +44,3 @@ ENDSSH
 echo "Initiating provision of ${REMOTE_SYSTEM}:"
 main
 echo "Provision complete (assuming no errors appeared above)"
-}
