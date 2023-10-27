@@ -67,3 +67,7 @@ See: [How to make Traefik trust our company CA for letsencrypt cert generation?]
 1. Google (or at least Bing) doesn't appear to index Traffic Community forums (verify this first)
 2. Apparently the ACME request has to go through Traffic in order to work; i.e. you can't just use internal Docker DNS names (verify).
 
+
+
+### Why `iputils-ping` vs. `inetutils`?
+- https://unix.stackexchange.com/a/400354/144192
