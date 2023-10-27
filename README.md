@@ -1,6 +1,8 @@
 # portainer-stacks
 Learning repo for an example Git-backed Portainer Implementation
 
+## General Config
+
 
 ## Setting up Smallstep's open-source Certificate Authority (`step-ca`) on Portainer and routing with Traefik as a Reserve Proxy for SSL certs on `.local` domains.
 
@@ -69,5 +71,14 @@ See: [How to make Traefik trust our company CA for letsencrypt cert generation?]
 
 
 
+
+## PHP/PhpStorm/XDebugWordPress config
+
+### PhpStorm's PHP Server config for wordpress.local
+
+![PhpStorm's PHP Server config for wordpress.local](assets/phpstorm-php-servers-config.png)
+
+
 ### Why `iputils-ping` vs. `inetutils`?
 - https://unix.stackexchange.com/a/400354/144192
+
