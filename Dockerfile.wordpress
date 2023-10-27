@@ -11,6 +11,8 @@ RUN curl -O https://raw.githubusercontent.com/wp-cli/builds/gh-pages/phar/wp-cli
   docker-php-ext-enable xdebug && \
   cd /usr/local/etc/php && \
   cp php.ini-development php.ini && \
+  touch /var/log/xdebug.log && \
+  chmod 777 /var/log/xdebug.log && \
   printf "\n\
 xdebug.mode=debug\n\
 xdebug.client_port=9003\n\
