@@ -1,3 +1,5 @@
 provision/.password.txt
+.fingerprint.txt
 .portainer-api-token.txt
+scripts/skills.json
 *.sql

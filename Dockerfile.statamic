@@ -1,0 +1,44 @@
+# Use an official PHP image with FPM
+FROM php:8.3-fpm
+
+LABEL authors="gearbox.works"
+
+# Install necessary PHP extensions and tools
+RUN apt-get update && apt-get install -y \
+    libpng-dev \
+    libjpeg-dev \
+    libfreetype6-dev \
+    libzip-dev \
+    unzip \
+    nginx \
+    supervisor \
+    git \
+    && docker-php-ext-configure gd --with-freetype --with-jpeg \
+    && docker-php-ext-install gd zip
+
+# Create writable storage directories
+# Symlink the storage directory
+# Ensure permissions are correct
+RUN mkdir -p /var/statamic/storage/logs /var/statamic/storage/statamic/stache-locks \
+    && chown -R www-data:www-data /var/statamic \
+    && rm -rf /var/www/html/storage \
+    && ln -s /var/statamic/storage /var/www/html/storage \
+    && chown -R www-data:www-data /var/www/html
+
+# Set the working directory
+WORKDIR /var/www/html
+
+COPY ./files/statamic/nginx.conf /etc/nginx/nginx.conf
+COPY ./files/statamic/supervisord.conf /etc/supervisor/conf.d/supervisord.conf
+COPY ./files/statamic/entrypoint.sh ./entrypoint.sh
+
+EXPOSE 80
+
+# Start Supervisor to manage Nginx and PHP-FPM
+CMD ["./entrypoint.sh"]
+
+
+
+
+
+

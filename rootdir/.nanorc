@@ -1,0 +1,12 @@
+set tabsize 2
+set autoindent
+set backup
+set linenumbers
+set atblanks
+set numbercolor white,black
+set constantshow
+set mouse
+set regexp
+set softwrap
+set stateflags
+set tabstospaces

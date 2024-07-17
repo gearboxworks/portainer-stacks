@@ -1,0 +1,46 @@
+version: '3.8'
+
+networks:
+  shared_network:
+    name: shared
+    external: true
+
+services:
+  statamic:
+    image: statamic:latest
+    networks:
+    - shared_network
+    ports:
+    - 8787:80
+    - 9003:9003
+    restart: unless-stopped
+    environment:
+      LEGO_CA_CERTIFICATES: "/etc/step/certs/root_ca.crt"
+      LEGO_CA_SERVER_NAME: "step-ca.local"
+      WORDPRESS_DB_HOST: db:3306
+      WORDPRESS_DB_USER: statamic
+      WORDPRESS_DB_PASSWORD: statamic
+    labels:
+    - "traefik.enable=true"
+    - "traefik.http.routers.statamic.rule=Host(`statamic.local`)"
+    - "traefik.http.routers.statamic.service=statamic@docker"
+    - "traefik.http.routers.statamic.entrypoints=websecure,web"
+    - "traefik.http.routers.statamic.tls.certresolver=default"
+    - "traefik.http.routers.statamic.tls.domains[0].main=statamic.local"
+    - "traefik.http.services.statamic.loadbalancer.server.port=80"
+
+    volumes:
+    # Store the WordPress source code remotely on user's computer
+    # Requires configuration
+    # On macOS: step certificate install ~/Downloads/roots.pem
+    - statamic-root:/var/www/html
+    # So Traefik can access Step CA's root cert (read-only)
+    - /etc/step:/etc/step:ro
+    # Use the host's SLL certificate store
+    - /etc/ssl/certs:/etc/ssl/certs
+
+volumes:
+  db_data:
+  statamic-root:
+    external: true
+

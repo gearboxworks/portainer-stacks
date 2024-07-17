@@ -45,7 +45,7 @@ THESE ARE PRIMARILY JUST NOTES AND NEED TO BE FULLY TESTED.
 
 9. In Portainer, create the `rp` stack _(Reverse Proxy)_ for `traefik` using `docker-compose.traefik.yaml`.
 
-10. In the `Traefik` container do this (CRITICAL!):
+10. In the `Traefik` container do this _(CRITICAL!):_
    ```
    cd /etc/step/certs
    cp root_ca.crt /etc/ssl/certs
