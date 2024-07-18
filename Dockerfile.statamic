@@ -21,7 +21,9 @@ RUN apt-get update && apt-get install -y \
 # Create writable storage directories
 # Symlink the storage directory
 # Ensure permissions are correct
-RUN mkdir -p /var/statamic/storage \
+# See https://stackoverflow.com/a/39179261/102699
+RUN mkdir -p /var/statamic/storage/framework/{sessions,views,cache} \
+    && chmod -R 775 /var/statamic/storage/framework \
     && chown -R www-data:www-data /var/statamic \
     && chown -R www-data:www-data /var/www/html
 
@@ -31,6 +33,7 @@ WORKDIR /var/www/html
 COPY ./files/statamic/filesystems.php /var/www/html/config/filesystems.php
 COPY ./files/statamic/nginx.conf /etc/nginx/nginx.conf
 COPY ./files/statamic/supervisord.conf /etc/supervisor/conf.d/supervisord.conf
+
 
 EXPOSE 80
 
