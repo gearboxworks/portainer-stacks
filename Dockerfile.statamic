@@ -22,7 +22,9 @@ RUN apt-get update && apt-get install -y \
 # Symlink the storage directory
 # Ensure permissions are correct
 # See https://stackoverflow.com/a/39179261/102699
-RUN mkdir -p /var/statamic/storage/framework/{sessions,views,cache} \
+RUN mkdir -p /var/statamic/storage/framework/sessions \
+    && mkdir -p /var/statamic/storage/framework/views \
+    && mkdir -p /var/statamic/storage/framework/cache/data \
     && chmod -R 775 /var/statamic/storage/framework \
     && chown -R www-data:www-data /var/statamic \
     && chown -R www-data:www-data /var/www/html
