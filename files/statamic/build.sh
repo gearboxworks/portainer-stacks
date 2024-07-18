@@ -1,5 +1,9 @@
 #!/usr/bin/env sh
 
-docker rmi "$(docker images | grep statamic | awk '{print $3}')"
+image="$(docker images --filter "reference=statamic:latest" -q)"
+for c in $(docker ps --filter "ancestor=${image}" -q) ; do
+  docker stop "${c}" && docker rm "${c}"
+done
 
+docker rmi "$(docker images | grep statamic | awk '{print $3}')"
 docker build -t statamic:latest -f Dockerfile.statamic .
