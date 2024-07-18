@@ -5,5 +5,7 @@ for c in $(docker ps --filter "ancestor=${image}" -q) ; do
   docker stop "${c}" && docker rm "${c}"
 done
 
-docker rmi "$(docker images | grep statamic | awk '{print $3}')"
+#Maybe I don't need this next line?
+#docker rmi "$(docker images | grep statamic | awk '{print $3}')"
+
 docker build -t statamic:latest -f Dockerfile.statamic .
