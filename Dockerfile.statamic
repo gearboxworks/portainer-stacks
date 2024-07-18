@@ -19,24 +19,22 @@ RUN apt-get update && apt-get install -y \
 # Create writable storage directories
 # Symlink the storage directory
 # Ensure permissions are correct
-RUN mkdir -p /var/statamic/storage/logs /var/statamic/storage/statamic/stache-locks \
+RUN mkdir -p /var/statamic/storage \
     && chown -R www-data:www-data /var/statamic \
-    && rm -rf /var/www/html/storage \
-    && ln -s /var/statamic/storage /var/www/html/storage \
     && chown -R www-data:www-data /var/www/html
 
 # Set the working directory
 WORKDIR /var/www/html
 
+COPY ./files/statamic/filesystems.php /var/www/html/config/filesystems.php
 COPY ./files/statamic/nginx.conf /etc/nginx/nginx.conf
 COPY ./files/statamic/supervisord.conf /etc/supervisor/conf.d/supervisord.conf
-COPY ./files/statamic/entrypoint.sh /entrypoint.sh
 RUN chmod +x /entrypoint.sh
 
 EXPOSE 80
 
 # Start Supervisor to manage Nginx and PHP-FPM
-CMD ["/entrypoint.sh"]
+CMD ["supervisord", "-c", "/etc/supervisor/supervisord.conf"]
 
 
 
