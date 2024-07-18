@@ -14,7 +14,6 @@ services:
     - 8787:80
     restart: unless-stopped
     environment:
-      LARAVEL_STORAGE_PATH: "/var/statamic/storage"
       LEGO_CA_CERTIFICATES: "/etc/step/certs/root_ca.crt"
       LEGO_CA_SERVER_NAME: "step-ca.local"
     labels:

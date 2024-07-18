@@ -3,6 +3,8 @@ FROM php:8.3-fpm
 
 LABEL authors="gearbox.works"
 
+ENV LARAVEL_STORAGE_PATH=/var/statamic/storage
+
 # Install necessary PHP extensions and tools
 RUN apt-get update && apt-get install -y \
     libpng-dev \
