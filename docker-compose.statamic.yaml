@@ -12,14 +12,10 @@ services:
     - shared_network
     ports:
     - 8787:80
-    - 9003:9003
     restart: unless-stopped
     environment:
       LEGO_CA_CERTIFICATES: "/etc/step/certs/root_ca.crt"
       LEGO_CA_SERVER_NAME: "step-ca.local"
-      WORDPRESS_DB_HOST: db:3306
-      WORDPRESS_DB_USER: statamic
-      WORDPRESS_DB_PASSWORD: statamic
     labels:
     - "traefik.enable=true"
     - "traefik.http.routers.statamic.rule=Host(`statamic.local`)"
@@ -40,7 +36,6 @@ services:
     - /etc/ssl/certs:/etc/ssl/certs
 
 volumes:
-  db_data:
   statamic-root:
     external: true
 
