@@ -16,7 +16,7 @@ services:
     environment:
       LEGO_CA_CERTIFICATES: "/etc/step/certs/root_ca.crt"
       LEGO_CA_SERVER_NAME: "step-ca.local"
-      FILESYSTEM_DRIVER: "/var/statamic/storage"
+      LARAVEL_STORAGE_PATH: "/var/statamic/storage"
     labels:
     - "traefik.enable=true"
     - "traefik.http.routers.statamic.rule=Host(`statamic.local`)"
