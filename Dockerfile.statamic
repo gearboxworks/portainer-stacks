@@ -1,22 +1,14 @@
 # Use an official PHP image with FPM
-FROM php:8.3-fpm
+FROM gbw-php8.3-fpm:latest AS statamic-stage
 
 LABEL authors="gearbox.works"
 
-ENV LARAVEL_STORAGE_PATH=/var/statamic/storage
+ARG GITHUB_TOKEN
 
-# Install necessary PHP extensions and tools
-RUN apt-get update && apt-get install -y \
-    libpng-dev \
-    libjpeg-dev \
-    libfreetype6-dev \
-    libzip-dev \
-    unzip \
-    nginx \
-    supervisor \
-    git \
-    && docker-php-ext-configure gd --with-freetype --with-jpeg \
-    && docker-php-ext-install gd zip
+# Install this so we an get access to ssh-keyscan
+RUN apt-get update && apt-get install -y openssh-client \
+    && mkdir -p ~/.ssh \
+    && ssh-keyscan github.com >> ~/.ssh/known_hosts
 
 # Create writable storage directories
 # Symlink the storage directory
@@ -25,19 +17,58 @@ RUN apt-get update && apt-get install -y \
 RUN mkdir -p /var/statamic/storage/framework/sessions \
     && mkdir -p /var/statamic/storage/framework/views \
     && mkdir -p /var/statamic/storage/framework/cache/data \
-    && chmod -R 775 /var/statamic/storage/framework \
+    && mkdir -p /var/statamic/storage/statamic/stache-locks \
+    && mkdir -p /var/statamic/storage/logs \
+    && touch    /var/statamic/storage/logs/laravel.log \
     && chown -R www-data:www-data /var/statamic \
-    && chown -R www-data:www-data /var/www/html
+    && chmod -R 775 /var/statamic/storage
+
+ENV LARAVEL_STORAGE_PATH=/var/statamic/storage
+
+# Install PHP Composer
+COPY --from=composer:latest /usr/bin/composer /usr/bin/composer
+
+#RUN composer config -g github-oauth.github.com $GITHUB_TOKEN
 
 # Set the working directory
-WORKDIR /var/www/html
+WORKDIR /var/statamic
 
-COPY ./files/statamic/filesystems.php /var/www/html/config/filesystems.php
-COPY ./files/statamic/nginx.conf /etc/nginx/nginx.conf
-COPY ./files/statamic/supervisord.conf /etc/supervisor/conf.d/supervisord.conf
+# Install Statamic
+RUN composer create-project statamic/statamic statamic.local \
+    && cd statamic.local \
+    && php artisan statamic:install
 
+## Install Statamic
+#ENV PATH="/root/.composer/vendor/bin:$PATH"
+#ENV COMPOSER_ALLOW_SUPERUSER=1
+#RUN composer global require statamic/cli
+#RUN script -q -c "statamic new \
+#      --no-interaction \
+#      --with-config \
+#      statamic.local \
+#      hettiger-statamic/stenciljs-starter-kit"
+#
+
+FROM node:latest as node-build
+WORKDIR /var/statamic/statamic.local
+COPY --from=statamic-stage /var/statamic /var/statamic
+RUN npm install \
+    && npm run build
+
+FROM gbw-php8.3-fpm:latest
+
+COPY --from=node-build /var/statamic /var/statamic
+
+COPY ./files/statamic/ /
+RUN chmod +x /move-files.sh
+
+#
+##FIXUP APP_URL in .env FILE \
+##ENABLE exif extension in /usr/local/etc/php/php.ini
 
 EXPOSE 80
+
+WORKDIR /var/www/html
 
 # Start Supervisor to manage Nginx and PHP-FPM
 CMD ["supervisord", "-c", "/etc/supervisor/supervisord.conf"]

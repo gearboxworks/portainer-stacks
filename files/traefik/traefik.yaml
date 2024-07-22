@@ -1,0 +1,45 @@
+global:
+  checkNewVersion: false
+  sendAnonymousUsage: false
+
+api:
+  dashboard: true
+  insecure: true
+
+log:
+  level: DEBUG
+  filePath: /var/log/traefik/traefik.log
+
+serversTransport:
+  rootCAs:
+    - /etc/step/certs/root_ca.crt
+
+entryPoints:
+  web:
+    address: :80
+    http:
+      redirections:
+        entryPoint:
+          to: websecure
+          scheme: https
+
+  websecure:
+    address: :443
+    http:
+      tls:
+        certResolver: default
+
+certificatesResolvers:
+  default:
+    acme:
+      email: mike@gearbox.works
+      storage: /etc/traefik/acme.json
+      certificatesDuration: 2160
+      caServer: https://step-ca.local:9000/acme/acme/directory
+      httpChallenge:
+        entryPoint: web
+
+providers:
+  docker:
+    exposedByDefault: false
+    endpoint: unix:///var/run/docker.sock

@@ -21,15 +21,17 @@ services:
     - "traefik.http.routers.statamic.rule=Host(`statamic.local`)"
     - "traefik.http.routers.statamic.service=statamic@docker"
     - "traefik.http.routers.statamic.entrypoints=websecure,web"
+    - "traefik.http.routers.statamic.tls=true"
     - "traefik.http.routers.statamic.tls.certresolver=default"
     - "traefik.http.routers.statamic.tls.domains[0].main=statamic.local"
     - "traefik.http.services.statamic.loadbalancer.server.port=80"
+    # Port 80 above matches internal port, i.e. <external>:<internal> e.g. 8888:80
 
     volumes:
-    # Store the WordPress source code remotely on user's computer
-    # Requires configuration
-    # On macOS: step certificate install ~/Downloads/roots.pem
+    # Store the Statamic source code on the VM
     - statamic-root:/var/www/html
+    # Requires configuration
+    # On macOS: Download https://step-ca.local:9000/roots.pem then `step certificate install ~/Downloads/roots.pem`
     # So Traefik can access Step CA's root cert (read-only)
     - /etc/step:/etc/step:ro
     # Use the host's SLL certificate store
@@ -37,5 +39,3 @@ services:
 
 volumes:
   statamic-root:
-    external: true
-

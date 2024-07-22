@@ -1,0 +1,65 @@
+# Use an official PHP image with FPM
+FROM php:8.3-fpm
+
+LABEL authors="gearbox.works"
+
+# PHP Extension Installer
+COPY --from=mlocati/php-extension-installer \
+    /usr/bin/install-php-extensions \
+    /usr/local/bin/
+
+# Install necessary PHP extensions and tools
+RUN apt-get update && apt-get install -y \
+    libpng-dev \
+    libjpeg-dev \
+    libfreetype6-dev \
+    libzip-dev \
+    unzip \
+    nginx \
+    supervisor \
+    git \
+    curl \
+    jq \
+    nano \
+    less \
+    iputils-ping \
+    && install-php-extensions gd zip fileinfo mbstring exif \
+    && cd /usr/local/etc/php \
+    && cp php.ini-development php.ini \
+    && docker-php-ext-configure gd --with-freetype --with-jpeg \
+    && echo ========================= \
+    && pecl install xdebug \
+    && docker-php-ext-enable xdebug \
+    && touch /var/log/xdebug.log \
+    && chmod -R 755 /var/log/xdebug.log \
+    && chown -R www-data:www-data /var/log/xdebug.log \
+    && echo ========================= \
+    && mkdir -p /var/log/php \
+    && touch /var/log/php/errors.log \
+    && chmod -R 755 /var/log/php \
+    && chown -R www-data:www-data /var/log/php \
+    && printf "\n\
+display_errors = On\n\
+display_startup_errors = On\n\
+error_reporting = E_ALL\n\
+log_errors = On\n\
+error_log = /var/log/php/errors.log\n\
+" > /usr/local/etc/php/conf.d/php-errors.ini \
+    && echo ========================= \
+    && printf "\n\
+xdebug.mode=debug\n\
+xdebug.client_port=9003\n\
+xdebug.start_with_request=yes\n\
+xdebug.log=/var/log/xdebug.log\n\
+xdebug.idekey=PHPSTORM\n\
+xdebug.discover_client_host=true\n\
+xdebug.client_discovery_header=HTTP_X_REAL_IP\n\
+" echo \
+    >> conf.d/docker-php-ext-xdebug.ini
+
+
+
+
+
+
+

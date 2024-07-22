@@ -69,7 +69,31 @@ See: [How to make Traefik trust our company CA for letsencrypt cert generation?]
 1. Google (or at least Bing) doesn't appear to index Traffic Community forums (verify this first)
 2. Apparently the ACME request has to go through Traffic in order to work; i.e. you can't just use internal Docker DNS names (verify).
 
+## Supporting `lsyncd`
 
+Run `sudo visudo` then add to `/etc/sudoers`:
+```
+<username> ALL=(ALL) NOPASSWD: /usr/bin/rsync
+```
+
+## Adding a New Domain
+To add a new domain from a new container — e.g. `example.local` — you need to do at least these things:
+
+ 1. Add labels to Docker Compose, i.e.:
+    ```
+    - "traefik.enable=true"
+    - "traefik.http.routers.wordpress.rule=Host(`example.local`)"
+    - "traefik.http.routers.wordpress.service=example@docker"
+    - "traefik.http.routers.wordpress.entrypoints=websecure,web"
+    - "traefik.http.routers.wordpress.tls.certresolver=default"
+    - "traefik.http.routers.wordpress.tls.domains[0].main=example.local"
+    - "traefik.http.services.wordpress.loadbalancer.server.port=80"
+    ```
+ 2. Add entries for `example.local` with IP address `192.168.1.110` to:
+    - `services.step-ca.extra_hosts` in `docker-compose.step-ca.yaml`
+    - `services.traefik.extra_hosts` in `docker-compose.traefik.yaml`
+ 3. Restart all stacks and containers using Portainer
+ 4. Run `publish-traefik-mdns.sh` to update mDNS.
 
 
 ## PHP/PhpStorm/XDebugWordPress config

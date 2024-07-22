@@ -8,7 +8,7 @@ networks:
     external: true
 
 services:
-  traefik.local:
+  traefik:
     # The Gearbox Works extension of v2 Traefik Docker image
     # which just adds /etc/traefik/traefik.yaml
     image: gbw-traefik:latest
@@ -16,6 +16,7 @@ services:
     networks:
     - shared_network
     extra_hosts:
+    - "statamic.local:192.168.1.110"
     - "wordpress.local:192.168.1.110"
     - "step-ca.local:192.168.1.110"
     - "traefik.local:192.168.1.110"
@@ -28,21 +29,20 @@ services:
     - "traefik.http.routers.traefik.service=traefik"
     - "traefik.http.routers.traefik.entrypoints=websecure,web"
     - "traefik.http.routers.traefik.tls.certresolver=default"
-    - "traefik.http.services.traefik.loadbalancer.server.port=8080"
     - "traefik.http.routers.traefik-api.rule=PathPrefix(`/api`)"
     - "traefik.http.routers.traefik-api.service=api@internal"
-    - "traefik.http.routers.traefik.entrypoints=web,websecure"
-
+    - "traefik.http.routers.traefik-api.entrypoints=web"
+    - "traefik.http.services.traefik.loadbalancer.server.port=8080"
     command:
       - "--api.insecure=true"
       - "--providers.docker"
     ports:
+      # The Web UI (enabled by --api.insecure=true)
+      - "8081:8080"
       # The HTTP port
       - "80:80"
       # The HTTPS port
       - "443:443"
-      # The Web UI (enabled by --api.insecure=true)
-      - "8081:8080"
     volumes:
       # So that Traefik can listen to the Docker events
       - /var/run/docker.sock:/var/run/docker.sock

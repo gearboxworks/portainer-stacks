@@ -12,6 +12,7 @@ services:
     networks:
     - shared_network
     extra_hosts:
+    - "statamic.local:192.168.1.110"
     - "wordpress.local:192.168.1.110"
     - "step-ca.local:192.168.1.110"
     - "traefik.local:192.168.1.110"

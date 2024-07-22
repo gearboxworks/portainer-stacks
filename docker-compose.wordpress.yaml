@@ -28,18 +28,18 @@ services:
     - "traefik.http.routers.wordpress.tls.certresolver=default"
     - "traefik.http.routers.wordpress.tls.domains[0].main=wordpress.local"
     - "traefik.http.services.wordpress.loadbalancer.server.port=80"
+    # Port 80 above matches internal port, i.e. <external>:<internal> e.g. 8888:80
 
-    # This is so I can test replacing wordpress.local with a shorter name in the MySQL db
-    - "traefik.http.routers.dww_store.rule=Host(`wp.local`)"
-    - "traefik.http.routers.dww_store.service=wordpress@docker"
-    - "traefik.http.routers.dww_store.entrypoints=websecure,web"
-    - "traefik.http.services.dww_store.loadbalancer.server.port=80"
-
-    # This is so I can test replacing wordpress.local with a longer name in the MySQL db
-    - "traefik.http.routers.wordpress.rule=Host(`thecultofwordpress.local`)"
-    - "traefik.http.routers.davisworkwear.service=wordpress@docker"
-    - "traefik.http.routers.davisworkwear.entrypoints=websecure,web"
-    - "traefik.http.services.davisworkwear.loadbalancer.server.port=80"
+#    - "traefik.http.routers.dww_store.rule=Host(`dww.local`)"
+#    - "traefik.http.routers.dww_store.service=wordpress@docker"
+#    - "traefik.http.routers.dww_store.entrypoints=websecure,web"
+#    - "traefik.http.services.dww_store.loadbalancer.server.port=80"
+#
+#    # This is so I can test replacing wordpress.local with a longer name in the MySQL db
+#    - "traefik.http.routers.wordpress.rule=Host(`thecultofwordpress.local`)"
+#    - "traefik.http.routers.davisworkwear.service=wordpress@docker"
+#    - "traefik.http.routers.davisworkwear.entrypoints=websecure,web"
+#    - "traefik.http.services.davisworkwear.loadbalancer.server.port=80"
 
     volumes:
     # Store the WordPress source code remotely on user's computer
