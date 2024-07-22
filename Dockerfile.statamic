@@ -1,14 +1,15 @@
 # Use an official PHP image with FPM
-FROM gbw-php8.3-fpm:latest AS statamic-stage
+#FROM gbw-php8.3-fpm:latest AS statamic-stage
+FROM gbw-php8.3-fpm:latest
 
 LABEL authors="gearbox.works"
 
-ARG GITHUB_TOKEN
+#ARG GITHUB_TOKEN
 
-# Install this so we an get access to ssh-keyscan
-RUN apt-get update && apt-get install -y openssh-client \
-    && mkdir -p ~/.ssh \
-    && ssh-keyscan github.com >> ~/.ssh/known_hosts
+## Install this so we an get access to ssh-keyscan
+#RUN apt-get update && apt-get install -y openssh-client \
+#    && mkdir -p ~/.ssh \
+#    && ssh-keyscan github.com >> ~/.ssh/known_hosts
 
 # Create writable storage directories
 # Symlink the storage directory
@@ -34,30 +35,30 @@ COPY --from=composer:latest /usr/bin/composer /usr/bin/composer
 WORKDIR /var/statamic
 
 # Install Statamic
-RUN composer create-project statamic/statamic statamic.local \
-    && cd statamic.local \
-    && php artisan statamic:install
+#RUN composer create-project statamic/statamic statamic.local \
+#    && cd statamic.local \
+#    && php artisan statamic:install
 
-## Install Statamic
-#ENV PATH="/root/.composer/vendor/bin:$PATH"
-#ENV COMPOSER_ALLOW_SUPERUSER=1
-#RUN composer global require statamic/cli
-#RUN script -q -c "statamic new \
-#      --no-interaction \
-#      --with-config \
-#      statamic.local \
-#      hettiger-statamic/stenciljs-starter-kit"
+# Install Statamic
+ENV PATH="/root/.composer/vendor/bin:$PATH"
+ENV COMPOSER_ALLOW_SUPERUSER=1
+RUN composer global require statamic/cli
+RUN script -q -c "statamic new \
+      --no-interaction \
+      --with-config \
+      --force \
+      statamic.local"
+
+
+#FROM node:latest as node-build
+#WORKDIR /var/statamic/statamic.local
+#COPY --from=statamic-stage /var/statamic /var/statamic
+#RUN npm install \
+#    && npm run build
+
+#FROM gbw-php8.3-fpm:latest
 #
-
-FROM node:latest as node-build
-WORKDIR /var/statamic/statamic.local
-COPY --from=statamic-stage /var/statamic /var/statamic
-RUN npm install \
-    && npm run build
-
-FROM gbw-php8.3-fpm:latest
-
-COPY --from=node-build /var/statamic /var/statamic
+#COPY --from=node-build /var/statamic /var/statamic
 
 COPY ./files/statamic/ /
 RUN chmod +x /move-files.sh
