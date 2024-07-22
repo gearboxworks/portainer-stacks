@@ -1,0 +1,41 @@
+version: '3.8'
+
+networks:
+  shared_network:
+    name: shared
+    external: true
+
+services:
+  laravel:
+    image: laravel:latest
+    networks:
+    - shared_network
+    ports:
+    - 8686:80
+    restart: unless-stopped
+    environment:
+      LEGO_CA_CERTIFICATES: "/etc/step/certs/root_ca.crt"
+      LEGO_CA_SERVER_NAME: "step-ca.local"
+    labels:
+    - "traefik.enable=true"
+    - "traefik.http.routers.laravel.rule=Host(`laravel.local`)"
+    - "traefik.http.routers.laravel.service=laravel@docker"
+    - "traefik.http.routers.laravel.entrypoints=websecure,web"
+    - "traefik.http.routers.laravel.tls=true"
+    - "traefik.http.routers.laravel.tls.certresolver=default"
+    - "traefik.http.routers.laravel.tls.domains[0].main=laravel.local"
+    - "traefik.http.services.laravel.loadbalancer.server.port=80"
+    # Port 80 above matches internal port, i.e. <external>:<internal> e.g. 8888:80
+
+    volumes:
+    # Store the laravel source code on the VM
+    - laravel-root:/var/www/html
+    # Requires configuration
+    # On macOS: Download https://step-ca.local:9000/roots.pem then `step certificate install ~/Downloads/roots.pem`
+    # So Traefik can access Step CA's root cert (read-only)
+    - /etc/step:/etc/step:ro
+    # Use the host's SLL certificate store
+    - /etc/ssl/certs:/etc/ssl/certs
+
+volumes:
+  laravel-root:

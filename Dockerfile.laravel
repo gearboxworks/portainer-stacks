@@ -1,0 +1,51 @@
+# Use an official PHP image with FPM
+FROM gbw-php8.3-fpm:latest
+
+LABEL authors="gearbox.works"
+
+# Install this so we an get access to ssh-keyscan
+RUN apt-get update && apt-get install -y openssh-client \
+    && mkdir -p ~/.ssh \
+    && ssh-keyscan github.com >> ~/.ssh/known_hosts
+
+# Create writable storage directories
+# Symlink the storage directory
+# Ensure permissions are correct
+# See https://stackoverflow.com/a/39179261/102699
+RUN mkdir -p /var/laravel/storage/framework/sessions \
+    && mkdir -p /var/laravel/storage/framework/views \
+    && mkdir -p /var/laravel/storage/framework/cache/data \
+    && mkdir -p /var/laravel/storage/laravel/stache-locks \
+    && mkdir -p /var/laravel/storage/logs \
+    && touch    /var/laravel/storage/logs/laravel.log \
+    && chown -R www-data:www-data /var/laravel \
+    && chmod -R 775 /var/laravel/storage
+
+ENV LARAVEL_STORAGE_PATH=/var/laravel/storage
+
+# Install PHP Composer
+COPY --from=composer:latest /usr/bin/composer /usr/bin/composer
+
+# Set the working directory
+WORKDIR /var/laravel
+
+# Install laravel
+RUN composer create-project laravel/laravel laravel.local
+
+COPY ./files/laravel/ /
+RUN chmod +x /move-files.sh
+
+##FIXUP APP_URL in .env FILE \
+
+EXPOSE 80
+
+WORKDIR /var/www/html
+
+# Start Supervisor to manage Nginx and PHP-FPM
+CMD ["supervisord", "-c", "/etc/supervisor/supervisord.conf"]
+
+
+
+
+
+
