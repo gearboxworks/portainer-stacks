@@ -5,6 +5,7 @@ FROM gbw-php8.3-fpm:latest
 LABEL authors="gearbox.works"
 
 #ARG GITHUB_TOKEN
+ARG SUPER_USER
 
 ## Install this so we an get access to ssh-keyscan
 #RUN apt-get update && apt-get install -y openssh-client \
@@ -42,12 +43,12 @@ WORKDIR /var/statamic
 # Install Statamic
 ENV PATH="/root/.composer/vendor/bin:$PATH"
 ENV COMPOSER_ALLOW_SUPERUSER=1
-RUN composer global require statamic/cli
-RUN script -q -c "statamic new \
+RUN composer global require statamic/cli \
+    && script -q -c "statamic new \
       --no-interaction \
-      --with-config \
-      --force \
-      statamic.local"
+      statamic.local" \
+    && cd statamic.local \
+    && php please make:user --super --no-interaction $SUPER_USER
 
 
 #FROM node:latest as node-build
@@ -71,7 +72,7 @@ EXPOSE 80
 
 WORKDIR /var/www/html
 
-# Start Supervisor to manage Nginx and PHP-FPM
+## Start Supervisor to manage Nginx and PHP-FPM
 CMD ["supervisord", "-c", "/etc/supervisor/supervisord.conf"]
 
 

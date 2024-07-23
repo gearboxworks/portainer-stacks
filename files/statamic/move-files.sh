@@ -17,6 +17,7 @@ shopt -u dotglob
 
 chown -R www-data:www-data /var/www/html
 chmod -R 775 /var/www/html/bootstrap/cache
+chmod -R 775 /var/statamic/storage
 find /var/www/html -type f -exec chmod 644 {} \;
 find /var/www/html -type d -exec chmod 755 {} \;
 
