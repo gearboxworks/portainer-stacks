@@ -40,33 +40,27 @@ WORKDIR /var/statamic
 #    && cd statamic.local \
 #    && php artisan statamic:install
 
-# Install Statamic
-ENV PATH="/root/.composer/vendor/bin:$PATH"
+# Clear out the install directory for `composer create-project ...`
+RUN rm -rf /var/statamic/statamic.local
+
+# Plugins will be disabled without this and thus the full install will otherwise fail.
 ENV COMPOSER_ALLOW_SUPERUSER=1
-RUN composer global require statamic/cli \
-    && script -q -c "statamic new \
-      --no-interaction \
-      statamic.local" \
-    && cd statamic.local \
-    && php please make:user --super --no-interaction $SUPER_USER
 
+# Plugins will be disabled without this and thus the full install will otherwise fail.
+RUN composer create-project statamic/statamic statamic.local \
+    && composer global require statamic/cli
 
-#FROM node:latest as node-build
-#WORKDIR /var/statamic/statamic.local
-#COPY --from=statamic-stage /var/statamic /var/statamic
-#RUN npm install \
-#    && npm run build
+# Set path so Statamic CLI can be executed, if ever needed
+ENV PATH="/root/.composer/vendor/bin:$PATH"
 
-#FROM gbw-php8.3-fpm:latest
-#
-#COPY --from=node-build /var/statamic /var/statamic
-
+# Copy over specific files
 COPY ./files/statamic/ /
-RUN chmod +x /move-files.sh
 
-#
-##FIXUP APP_URL in .env FILE \
-##ENABLE exif extension in /usr/local/etc/php/php.ini
+# Prepare and run fixup.sh to fixup source files, and also
+# make on-first-run.sh executable for supervisord.
+RUN chmod +x /fixup.sh \
+    && /fixup.sh \
+    && chmod +x /on-first-run.sh
 
 EXPOSE 80
 

@@ -1,0 +1,4 @@
+name: 'Admin User'
+super: true
+id: {{id}}
+password: change_me

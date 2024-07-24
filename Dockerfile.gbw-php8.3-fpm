@@ -22,6 +22,7 @@ RUN apt-get update && apt-get install -y \
     jq \
     nano \
     less \
+    rsync \
     iputils-ping \
     && install-php-extensions gd zip fileinfo mbstring exif \
     && cd /usr/local/etc/php \
