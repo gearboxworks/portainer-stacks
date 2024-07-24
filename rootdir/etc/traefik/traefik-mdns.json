@@ -3,6 +3,7 @@
       {"name":"wordpress.local", "last_seen": "2023-07-29T05:52:18Z"},
       {"name":"traefik.local", "last_seen": "2023-07-29T05:52:19Z"},
       {"name":"step-ca.local", "last_seen": "2023-07-29T05:52:20Z"},
-      {"name":"statamic.local", "last_seen": ""}
+      {"name":"statamic.local", "last_seen": ""},
+      {"name":"laravel.local", "last_seen": ""}
    ]
 }
