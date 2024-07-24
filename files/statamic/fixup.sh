@@ -1,32 +1,13 @@
 #!/usr/bin/env bash
 
-# Add `\Illuminate\Support\Facades\URL::forceScheme('https');`
-# to boot function in `./app/Providers/AppServiceProvider.php`
+# Add GENERATE_HTTPS=true to .env to support
+# `./app/Providers/HttpsServiceProvider.php`
 # See https://stackoverflow.com/a/61313133/102699
 function fix_https {
-  local file
-  local namespace
-  local func_def
-  local func_call
-  local use_stmt
 
   cd /var/statamic/statamic.local || exit 1
+  sed -i "1i GENERATE_HTTPS=true" .env
 
-  file="./app/Providers/AppServiceProvider.php"
-  namespace="namespace App\\\\Providers;"
-  func_def="public function boot(): void"
-  use_stmt="use Illuminate\\\\Support\\\\Facades\\\\URL;"
-  func_call="\\\\tURL::forceScheme('https');"
-
-  sed -i "/${namespace}/ {
-    n
-    a ${use_stmt}
-  }" "${file}"
-
-  sed -i "/${func_def}/ {
-    n
-    a ${func_call}
-  }" "${file}"
 }
 
 # Set APP_URL in both `.env` and `./config/app.php`

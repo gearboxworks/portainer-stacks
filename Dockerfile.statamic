@@ -46,9 +46,13 @@ RUN rm -rf /var/statamic/statamic.local
 # Plugins will be disabled without this and thus the full install will otherwise fail.
 ENV COMPOSER_ALLOW_SUPERUSER=1
 
-# Plugins will be disabled without this and thus the full install will otherwise fail.
+# Run composer to install Statamic, install the CLI in case we need it, and
+# run `artisan make:provider` to add `HttpsServiceProvider` to `./bootstrap/providers.php`
+# See https://laravel.com/docs/11.x/providers
 RUN composer create-project statamic/statamic statamic.local \
-    && composer global require statamic/cli
+    && composer global require statamic/cli \
+    && cd statamic.local \
+    && php artisan make:provider HttpsServiceProvider
 
 # Set path so Statamic CLI can be executed, if ever needed
 ENV PATH="/root/.composer/vendor/bin:$PATH"
@@ -62,11 +66,16 @@ RUN chmod +x /fixup.sh \
     && /fixup.sh \
     && chmod +x /on-first-run.sh
 
+# Default port for a web app is 80, so why not use it?
 EXPOSE 80
 
+# Set our actually work directory which `on-first-run.sh`
+# will copy files from /var/statamic/statamic.local to
+# this directory
 WORKDIR /var/www/html
 
-## Start Supervisor to manage Nginx and PHP-FPM
+# Start Supervisor to manage Nginx and PHP-FPM and to run
+# `/on-first-run.sh` when the container is first started.
 CMD ["supervisord", "-c", "/etc/supervisor/supervisord.conf"]
 
 
