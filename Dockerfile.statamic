@@ -1,5 +1,4 @@
 # Use an official PHP image with FPM
-#FROM gbw-php8.3-fpm:latest AS statamic-stage
 FROM gbw-php8.3-fpm:latest
 
 LABEL authors="gearbox.works"
