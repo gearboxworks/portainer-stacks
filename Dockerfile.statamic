@@ -3,14 +3,6 @@ FROM gbw-php8.3-fpm:latest
 
 LABEL authors="gearbox.works"
 
-#ARG GITHUB_TOKEN
-ARG SUPER_USER
-
-## Install this so we an get access to ssh-keyscan
-#RUN apt-get update && apt-get install -y openssh-client \
-#    && mkdir -p ~/.ssh \
-#    && ssh-keyscan github.com >> ~/.ssh/known_hosts
-
 # Create writable storage directories
 # Symlink the storage directory
 # Ensure permissions are correct
@@ -24,20 +16,14 @@ RUN mkdir -p /var/statamic/storage/framework/sessions \
     && chown -R www-data:www-data /var/statamic \
     && chmod -R 775 /var/statamic/storage
 
+# Tell Laravel to use those stoarge directories
 ENV LARAVEL_STORAGE_PATH=/var/statamic/storage
 
 # Install PHP Composer
 COPY --from=composer:latest /usr/bin/composer /usr/bin/composer
 
-#RUN composer config -g github-oauth.github.com $GITHUB_TOKEN
-
 # Set the working directory
 WORKDIR /var/statamic
-
-# Install Statamic
-#RUN composer create-project statamic/statamic statamic.local \
-#    && cd statamic.local \
-#    && php artisan statamic:install
 
 # Clear out the install directory for `composer create-project ...`
 RUN rm -rf /var/statamic/statamic.local
