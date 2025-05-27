@@ -34,11 +34,14 @@ THESE ARE PRIMARILY JUST NOTES AND NEED TO BE FULLY TESTED.
    
 6. Download file from https://step-ca.local:9000/roots.pem 
    * On macOS, open it and add to your "System" Keychain then open it and change trust to _"Always Trust":_
-      ![](assets/macos-trust-cert-in-keychain.png)
+     ![](assets/macos-trust-cert-in-keychain.png)
    * I did not try this on Linux or Windows.
      * Submit a pull request if you get it working for desktop use on either OS. 
 
-7. Run `step ca bootstrap --ca-url https://step-ca.local:9000 --install --fingerprint <fingerprint>` on macOS to point to Step CA running on Debian 11 VM:
+7. Run the following on macOS to point to Step CA running on Debian 11 VM:
+   ```shell
+   step ca bootstrap --ca-url https://step-ca.local:9000 --install --fingerprint <fingerprint>
+   ```
    ![](assets/step-ca-bootstrap.png)
 
 8. Download `roots.pem` and install on macOS using `step certificate install ~/Downloads/roots.pem`.
