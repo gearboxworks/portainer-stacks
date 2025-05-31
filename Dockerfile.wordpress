@@ -6,7 +6,7 @@ RUN curl -O https://raw.githubusercontent.com/wp-cli/builds/gh-pages/phar/wp-cli
   chmod +x wp-cli.phar && \
   mv wp-cli.phar /usr/local/bin/wp && \
   apt-get update && \
-  apt-get install nano less iputils-ping && \
+  apt-get install -y nano less iputils-ping && \
   pecl install xdebug && \
   docker-php-ext-enable xdebug && \
   cd /usr/local/etc/php && \
