@@ -13,6 +13,10 @@ services:
     ports:
     - 8888:80
     - 9003:9003
+    dns:
+    - 8.8.4.4
+    - 8.8.8.8
+    - 1.1.1.1
     restart: unless-stopped
     environment:
       LEGO_CA_CERTIFICATES: "/etc/step/certs/root_ca.crt"
@@ -22,11 +26,14 @@ services:
       WORDPRESS_DB_PASSWORD: wordpress
     labels:
     - "traefik.enable=true"
-    - "traefik.http.routers.wordpress.rule=Host(`wordpress.local`)"
+    # Router for both domains
+    - "traefik.http.routers.wordpress.rule=Host(`wordpress.local`) || Host(`mikeschinkel.com`)"
     - "traefik.http.routers.wordpress.service=wordpress@docker"
     - "traefik.http.routers.wordpress.entrypoints=websecure,web"
     - "traefik.http.routers.wordpress.tls.certresolver=default"
+    # Multiple domains for certificate
     - "traefik.http.routers.wordpress.tls.domains[0].main=wordpress.local"
+    - "traefik.http.routers.wordpress.tls.domains[1].main=mikeschinkel.com"
       # Port 80 matches internal port, i.e. <external>:<internal> e.g. 8888:80
     - "traefik.http.services.wordpress.loadbalancer.server.port=80"
 
